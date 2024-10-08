@@ -5,6 +5,9 @@ namespace Cristal\Presentation\Resource;
 use Closure;
 use Generator;
 
+use Cristal\Presentation\PPTX;
+use Cristal\Presentation\ResourceInterface;
+
 class Slide extends XmlResource
 {
     /**
@@ -16,6 +19,18 @@ class Slide extends XmlResource
      * @var string
      */
     protected const TABLE_ROW_TEMPLATE_NAME = 'replaceByNewRow';
+
+    /**
+     * Slide notes
+     * @var NoteSlide
+     */
+    private $notes = null;
+
+    public function __construct(string $target, string $relType, string $contentType, PPTX $document)
+    {
+        parent::__construct($target, $relType, $contentType, $document);
+        // $this->mapResources();
+    }
 
     /**
      * @param mixed $key
@@ -57,6 +72,38 @@ class Slide extends XmlResource
         $this->save();
     }
 
+    /**
+     * Replaces plaheolders (e.g. {{noteSlide}}) in slide notes. If notes do not exist it does not create them. 
+     * @param mixed $data
+     * @param \Cristal\Presentation\Resource\Slide $slide
+     * @return void
+     */
+    function templateNotes($data){
+        
+        foreach($this->getResources() as $res){
+            if ($res instanceof NoteSlide){
+                $this->notes = $res;
+                break;
+            }
+        }
+        if ($this->notes){
+
+            if (!$data instanceof Closure) {
+                $data = function ($matches) use ($data) {
+                    return $this->findDataRecursively($matches['needle'], $data);
+                };
+            }
+
+            $xmlString = $this->replaceNeedle($this->notes->getContent(), $data); // this changes 
+
+            $this->notes->setContent($xmlString);
+            $this->notes->save();
+        }
+    }
+
+    function createNoteSlide(string $noteContents){
+        // TODO: implement
+    }
     protected function replaceNeedle(string $source, Closure $callback): string
     {
         $sanitizer = static function ($matches) use ($callback) {
@@ -136,8 +183,7 @@ class Slide extends XmlResource
                 $this->getResource($id)->setContent($content);
             }
         }
-    }
-
+    }    
     /**
      * Gets the image identifiers capable to being templated.
      */
@@ -155,11 +201,28 @@ class Slide extends XmlResource
     }
 
     protected function mapResources(): void
-    {
+    {        
         parent::mapResources();
+        // var_dump(count($this->resources));
+        // find the notes for this slide (there should be only one resource of type NoteSlide)        
+        foreach($this->resources as $res){
+            if ($res instanceof NoteSlide){
+                $this->notes = $res;
+                break;
+            }
+        }
         // Ignore noteSlide prevent failure because, current library doesnt support that, for moment...
+        /* as of 2024.10.27 the NoteSlide seems to be working fine
         $this->resources = array_filter($this->resources, static function ($resource) {
             return !$resource instanceof NoteSlide;
-        });
+        }); */
     }
+
+    /**
+     * Summary of getNotes
+     * @return GenericResource|NoteSlide
+     */
+    public function getNotes(): ?NoteSlide{
+        return $this->notes;
+    }    
 }

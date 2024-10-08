@@ -253,7 +253,13 @@ class PPTX
         return $this;
     }
 
-    public function table(Closure $data, Closure $finder): PPTX
+    /**
+     * Fills table woth data; Finder should contain columns; Columns should be in PowerPoint template;
+     * @param \Closure $data
+     * @param \Closure|null $finder
+     * @return \Cristal\Presentation\PPTX
+     */
+    public function table(Closure $data, Closure $finder = null): PPTX
     {
         foreach ($this->getSlides() as $slide) {
             $slide->table($data, $finder);
