@@ -42,4 +42,27 @@ class NoteSlideTest extends TestCase
         $this->assertStringContainsString($this->data['noteSlide1'], $templatedSlide->getNotes()->getContent());
         
     }
+
+    /**
+     * Summary of it_templates_note_slide
+     * @test
+     */
+    public function it_templates_note_slide_toegether_wtih_slide(){
+        
+        foreach($this->pptx->getSlides() as $slide){
+            $slide->template($this->data);
+        }
+
+        $this->pptx->saveAs(self::TMP_PATH.'/template.pptx');
+
+        $templatedPPTX = new PPTX(self::TMP_PATH.'/template.pptx');
+        $templatedSlides = $templatedPPTX->getSlides();
+        for ($i = 1; $i <= count($this->data); $i++){
+            $templatedSlide = $templatedSlides[$i-1];
+            $templatedSlide->getResources(); // need to call this so the resources are properly mapped ??
+            $this->assertStringContainsString($this->data["noteSlide{$i}"], $templatedSlide->getNotes()->getContent());
+        }
+        
+        
+    }
 }

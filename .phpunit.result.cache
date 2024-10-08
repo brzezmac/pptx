@@ -1,1 +1,1 @@
-{"version":1,"defects":{"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide":7},"times":{"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide":0.063}}
+{"version":1,"defects":{"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide":7,"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide_toegether_wtih_slide":8},"times":{"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide":0.074,"Cristal\\Presentation\\Tests\\NoteSlideTest::it_templates_note_slide_toegether_wtih_slide":0.074}}

@@ -69,6 +69,8 @@ class Slide extends XmlResource
 
         $this->setContent($xmlString);
 
+        $this->templateNotes($data);
+
         $this->save();
     }
 
@@ -100,10 +102,7 @@ class Slide extends XmlResource
             $this->notes->save();
         }
     }
-
-    function createNoteSlide(string $noteContents){
-        // TODO: implement
-    }
+    
     protected function replaceNeedle(string $source, Closure $callback): string
     {
         $sanitizer = static function ($matches) use ($callback) {
